@@ -1,0 +1,6 @@
+Revision history for Perl extension Net::Trustico.
+
+0.01  Sun Aug  8 19:45:13 2010
+	- original version; created by h2xs 1.23 with options
+		-X Net::Trustico
+

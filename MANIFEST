@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Net-Trustico.t
+lib/Net/Trustico.pm
