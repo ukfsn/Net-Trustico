@@ -4,10 +4,10 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 
-use LWP::Simple;
+use LWP::UserAgent;
 use Carp qw/croak/;
 use base 'Class::Accessor';
-__PACKAGE__->mk_accessors(qw/user pass/);
+__PACKAGE__->mk_accessors(qw/username password/);
 
 =head1 NAME
 
@@ -93,14 +93,16 @@ it under the terms of the FSF GPL version 2.0 or later.
 
 =cut
 
+sub new { shift->SUPER::new({ @_ }) }
+
 sub hello {
     my ( $self, $string ) = @_;
 
     $string = "Net::Trustico test string" unless $string;
 
     my $res = $self->_req('Hello', { 'TextToEcho' => $string } );
-    return undef unless $res{SuccessCode} == 1;
-    return undef unless $res{TextToEcho} eq $string;
+    return undef unless $res->{SuccessCode} == 1;
+    return undef unless $res->{TextToEcho} eq $string;
     return 1;
 }
 
@@ -120,7 +122,7 @@ sub status {
     }
 
     my $res = $self->_req('GetStatus', $args);
-    return undef unless $res{SuccessCode} == 1;
+    return undef unless $res->{SuccessCode} == 1;
     # XXX Process returned data
 }
 
@@ -132,12 +134,22 @@ sub _process_type_2 {
 
 sub _req {
     my ($self, $command, $args) = @_;
+
+    my $a = {
+        Command => $command,
+        UserName => $self->username,
+        Password => $self->password
+    };
+
+    foreach (keys %$args) {
+        $a->{$_} = $args->{$_};
+    }
+
     my $ua = LWP::UserAgent->new;
     $ua->timeout(30);
-
     my $url = 'https://api.ssl-processing.com/geodirect/postapi/';
 
-    my $res = $ua->post($url, 'Command' => $command, $args);
+    my $res = $ua->post($url, $a);
 
     croak "Unable to connect to API" unless $res->is_success;
 
