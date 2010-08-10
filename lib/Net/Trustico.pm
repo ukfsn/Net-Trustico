@@ -6,6 +6,7 @@ our $VERSION = '0.01';
 
 use LWP::UserAgent;
 use Carp qw/croak/;
+use Time::Piece;
 use base 'Class::Accessor';
 __PACKAGE__->mk_accessors(qw/username password/);
 
@@ -42,8 +43,167 @@ my %products = (
         reissuance => 0,
         canrenew => 0
     },
-    # XXX Need to add remaining products
-    );
+    quickssl => {
+        name => 'QuickSSL Basic',
+        periods => [ qw/12 24 36 48 60/ ],
+        vetting => 'DOM',
+        process => '1',
+        reissuance => 0,
+        canrenew => 1
+    },
+    quicksslpremium => {
+        name => 'QuickSSL Premium',
+        periods => [ qw/12 24 36 48 60 72/ ],
+        vetting => 'DOM',
+        process => '1',
+        reissuance => 0,
+        canrenew => 1
+    },
+    truebusinessid => {
+        name => 'True BusinessID',
+        periods => [ qw/12 24 36 48 60/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    truebusinessidwild => {
+        name => 'True BusinessID Wildcard',
+        periods => [ qw/12 24 36 48 60/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    truebusinessidev => {
+        name => 'True BusinessID Wildcard',
+        periods => [ qw/12 24/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    power => {
+        name => 'Power Server ID',
+        periods => [ qw/12 24 36 48 60 72/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    powerwild => {
+        name => 'Power Server ID Wildcard',
+        periods => [ qw/12 24 36 48 60 72/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    secure => {
+        name => 'Secure Site',
+        periods => [ qw/12 24 36/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    securepro => {
+        name => 'Secure Site Pro',
+        periods => [ qw/12 24 36/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    secureev => {
+        name => 'Secure Site + EV',
+        periods => [ qw/12 24/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    secureproev => {
+        name => 'Secure Site Pro + EV',
+        periods => [ qw/12 24/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    },
+    ssl123 => {
+        name => 'SSL123',
+        periods => [ qw/12 24 36 48 60/ ],
+        vetting => 'ORG',
+        process => '2',
+        reissuance => 0,
+        canrenew => 1
+    } );
+
+my %process = (
+    1 => {
+        admin => {
+            title => 'AdminTitle', firstname => 'AdminFirstName',
+            lastname => 'AdminLastName',
+            organisation => 'AdminOrganization',
+            taxid => 'AdminTaxID', role => 'AdminRole', 
+            email => 'AdminEmail', phonecc => 'AdminPhoneCC',
+            phoneac => 'AdminPhoneAC', phonen => 'AdminPhoneN',
+            address1 => 'AdminAddress1', address2 => 'AdminAddress2',
+            city => 'AdminCity', state => 'AdminState', 
+            postcode => 'AdminPostCode', country => 'AdminCountry',
+            day => 'AdminMemDateD', 'month' => 'AdminMemDateM',
+            year => 'AdminMemDateY'
+        },
+        tech => {
+            title => 'TechTitle', firstname => 'TechFirstName',
+            lastname => 'TechLastName',
+            organisation => 'TechOrganization', email => 'TechEmail',
+            phonecc => 'TechPhoneCC', phoneac => 'TechPhoneAC',
+            phonen => 'TechPhoneN', address1 => 'TechAddress1',
+            address2 => 'TechAddress2', city => 'TechCity',
+            state => 'TechState', postcode => 'TechPostCode',
+            country => 'TechCountry'
+        },
+        techusereseller => 'TechUseReseller', product => 'ProductName',
+        csr => 'CSR', domain => 'Domain', period => 'ValidityPeriod',
+        insurance => 'Insurance', servercount => 'ServerCount',
+        approver => 'ApproverEmail', dnsnames => 'DnsNames',
+        special => 'SpecialInstructions', terms => 'AgreedToTerms',
+        novalidation => 'NoCSRValidation'
+    },
+    2 => {
+        org => {
+            name => 'OrgName', duns => 'OrgDUNS', taxid => 'OrgTaxID',
+            address1 => 'OrgAddress1', address2 => 'OrgAddress2',
+            city => 'OrgCity', state => 'OrgState', 
+            postcode => 'OrgPostCode', country => 'OrgCountry',
+            phonecc => 'OrgPhoneCC', phoneac => 'OrgPhoneAC', 
+            phonen => 'OrgPhoneN'
+        },
+        admin => {
+            title => 'AdminTitle', firstname => 'AdminFirstName',
+            lastname => 'AdminLastName', role => 'AdminRole',
+            email => 'AdminEmail', day => 'AdminMemDateD',
+            'month' => 'AdminMemDateM', year => 'AdminMemDateY'
+        },
+        tech => {
+            title => 'TechTitle', firstname => 'TechFirstName',
+            lastname => 'TechLastName',
+            organisation => 'TechOrganization', email => 'TechEmail',
+            phonecc => 'TechPhoneCC', phoneac => 'TechPhoneAC',
+            phonen => 'TechPhoneN', address1 => 'TechAddress1',
+            address2 => 'TechAddress2', city => 'TechCity',
+            state => 'TechState', postcode => 'TechPostCode',
+            country => 'TechCountry'
+        },
+        techusereseller => 'TechUseReseller', product => 'ProductName',
+        csr => 'CSR', domain => 'Domain', period => 'ValidityPeriod',
+        insurance => 'Insurance', servercount => 'ServerCount',
+        approver => 'ApproverEmail', special => 'SpecialInstructions',
+        terms => 'AgreedToTerms', novalidation => 'NoCSRValidation'
+    } );
+
 
 =head1 NAME
 
@@ -126,6 +286,9 @@ Parameters:
 product     - the product code for the relevant product as provided by
               the products() method.
 
+renewal     - the order will be processed as a renewal if this parameter
+              is passed.
+
 csr         - the CSR for the certificate
 
 period      - period for the certificate in months. Valid options are
@@ -187,7 +350,7 @@ http://www.trustico.com/
 
 =head1 AUTHOR
 
-Jason Clifford, E<lt>jason@Eukfsn.org<gt>
+Jason Clifford, E<lt>jason@ukfsn.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -213,15 +376,74 @@ sub hello {
 sub order {
     my ($self, %args) = @_;
 
-    my $args = { };
-    my $command = 'ProcessType1';
-    if ( $products{$args{product}->{process}} != 1 ) {
-        $command = 'ProcessType2';
+    my $p = $products{$args{product}}->{process};
+
+    for (qw/ product period insurance servercount approver /) {
+        croak "You must supply the $_ parameter" unless exists $args{$_};
     }
 
-    # XXX process %args into correct fields for $command
+    if ( $p == 2 ) {
+        for (qw/name address1 city state postcode country phonecc
+                phoneac phonen/) {
+            croak "You must supply the org $_ parameter" unless $args{org}->{$_};
+        }
+    }
+
+    for (qw/admin tech/) {
+        my $type = $_;
+        next if $type eq 'tech' && $args{techusereseller} == 1;
+        for (qw/ title firstname lastname role email /) {
+            croak "you must supply the $type $_ parameter" 
+                unless $args{$type}->{$_};
+        }
+        if ( $type eq 'admin' && $p == 1 ) {
+            for (qw/ organisation phonecc phoneac phonen address1 city
+                     state postcode country / ) {
+                croak "You must supply the $type $_ parameter" unless $args{$type}->{$_};
+            }
+        }
+        if ( $type eq 'tech' ) {
+            for (qw/ organisation phonecc phoneac phonen address1 city
+                     state postcode country /) {
+                croak "You must supply the $type $_ parameter" unless $args{$type}->{$_};
+            }
+        }
+    }
+
+    if ( $args{admin}->{memdate} ) {
+        my $d = Time::Piece->strptime($args{admin}->{memdate}, "%F");
+        $args{admin}->{day} = $d->mday;
+        $args{admin}->{month} = $d->mon;
+        $args{admin}->{year} = $d->year;
+        delete $args{admin}->{memdate};
+    }
     
-    my $res = $self->_req($command, $args);
+    my %order = ();
+
+    my $recurse = undef;
+    $recurse = sub {
+        my ($input, $parent) = @_;
+        while ( my ($k, $v) = each %$input) {
+            next unless exists $args{$k} || exists $args{$parent}->{$k};
+            $recurse->($v, $k), next if ref $v eq 'HASH';
+            if ( $parent ) {
+                $order{$v} = $args{$parent}->{$k};
+            }
+            else {
+                $order{$v} = $args{$k};
+            }
+        }
+    };
+    
+    $recurse->($process{$p});
+    $order{ProductName} = $products{$args{product}}->{name};
+    $order{ProductName} = $order{ProductName} . ' RN' if $args{renewal} == 1;
+    $order{AgreedToTerms} = 1;
+
+    my $command = 'ProcessType1';
+    $command = 'ProcessType2' if $p == 2;
+
+    $self->_req($command, \%order);
 }
 
 sub status {
@@ -239,7 +461,7 @@ sub status {
     $self->_req('GetStatus', $args);
 }
 
-sub products { return %products; }
+sub products { return \%products; }
 
 sub _req {
     my ($self, $command, $args) = @_;

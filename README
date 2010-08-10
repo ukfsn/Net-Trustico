@@ -25,16 +25,17 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+LWP::UserAgent
+Time::Piece
+Carp
 
 COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
 
-Copyright (C) 2010 by Jason Clifford
+Copyright (C) 2010 by Jason Clifford <jason@ukfsn.org>
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.10.0 or,
-at your option, any later version of Perl 5 you may have available.
+it under the terms of the FSF GPL version 2.0 or later.
 
 
